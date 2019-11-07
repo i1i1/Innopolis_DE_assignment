@@ -16,9 +16,6 @@ class Gui:
 
         self.fig, self.ax = plt.subplots()
 
-        self.ax.relim()
-        self.ax.autoscale_view()
-
         self.ax.set_title(self.title)
         self.ax.legend()
         self.ax.grid(True)
@@ -62,6 +59,8 @@ class Gui:
 
         self._exact_line.set_data(ex, self.exact(ex))
 
+        self.ax.relim()
+        self.ax.autoscale_view()
         plt.draw()
 
     def _add_button(self, var, box):

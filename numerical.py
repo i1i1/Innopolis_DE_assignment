@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 
 class Exact:
-    def derivative(x, y: int) -> int:
+    def derivative(x, y: float) -> float:
         return (1 + y/x) * log(1 + y/x) + y/x
 
     def exact(x):
