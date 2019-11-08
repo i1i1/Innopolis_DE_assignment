@@ -17,9 +17,7 @@ class Gui:
         self.fig, self.ax = plt.subplots()
 
         self.ax.set_title(self.title)
-        self.ax.legend()
         self.ax.grid(True)
-
 
     def add_numericals(self, *numericals):
         self.numericals += [*numericals]
@@ -37,13 +35,16 @@ class Gui:
             line, = self.ax.plot(x, nm.get_y(x, self.y0), "o-", label=nm.name)
             self._lines.append(line)
 
-        self._exact_line, = self.ax.plot(ex, self.exact(ex), label='exact')
+        self.exact.set_constant(self.x0, self.y0)
+        self._exact_line, = self.ax.plot(ex, self.exact.exact(ex),
+                                         label='exact')
 
         self._add_button("h",  [0.1, 0.1,   0.05, 0.05])
         self._add_button("x0", [0.2, 0.1,   0.05, 0.05])
         self._add_button("X",  [0.3, 0.1,   0.05, 0.05])
         self._add_button("y0", [0.2, 0.025, 0.05, 0.05])
 
+        self.ax.legend()
         plt.show()
 
     def _replot(self):
@@ -57,7 +58,8 @@ class Gui:
 
             line.set_data(x, nm.get_y(x, self.y0))
 
-        self._exact_line.set_data(ex, self.exact(ex))
+        self.exact.set_constant(self.x0, self.y0)
+        self._exact_line.set_data(ex, self.exact.exact(ex))
 
         self.ax.relim()
         self.ax.autoscale_view()
