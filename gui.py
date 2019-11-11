@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import TextBox
+from matplotlib.widgets import TextBox, CheckButtons
 
 
 class Gui:
@@ -15,7 +15,7 @@ class Gui:
 
     def __init__(self, exact, x0, y0, X, h):
         self.exact = exact
-        self.numericals = []
+        self.numericals = list()
         self.x0 = x0
         self.y0 = y0
         self.X = X
@@ -31,11 +31,29 @@ class Gui:
         self.ax_sol.grid(True)
         self.ax_lerr.grid(True)
         self.ax_gerr.grid(True)
-        plt.subplots_adjust(bottom=0.2)
+        plt.subplots_adjust(left=0.2, bottom=0.2)
 
     def add_numericals(self, *numericals):
         for nu in numericals:
             self.numericals.append(Gui._Numerical(nu))
+
+    def _add_checkbuttons(self):
+        labels = [nu.nm.name for nu in self.numericals]
+        visibility = [nu.line.get_visible() for nu in self.numericals]
+        axes = plt.axes([0.05, 0.75, 0.10, 0.15], title='Plots')
+
+        def checkbox_update(label):
+            for nu in self.numericals:
+                if nu.nm.name != label:
+                    continue
+                vis = not nu.line.get_visible()
+                nu.line.set_visible(vis)
+                nu.gerr.set_visible(vis)
+                nu.lerr.set_visible(vis)
+                self._redraw_plot()
+
+        self.checkboxes = CheckButtons(axes, labels, visibility)
+        self.checkboxes.on_clicked(checkbox_update)
 
     def show_window(self):
         n = max((self.X-self.x0) // self.h, 2)
@@ -64,8 +82,9 @@ class Gui:
         self._add_button("x0", [0.2, 0.1,   0.05, 0.05])
         self._add_button("X",  [0.3, 0.1,   0.05, 0.05])
         self._add_button("y0", [0.2, 0.025, 0.05, 0.05])
-
+        self._add_checkbuttons()
         self.ax_sol.legend()
+
         plt.show()
 
     def _replot(self):
@@ -82,6 +101,9 @@ class Gui:
             nu.lerr.set_data(x, nu.nm.get_lerr(x, self.y0, self.exact.exact))
             nu.gerr.set_data(x, nu.nm.get_gerr(x, self.y0, self.exact.exact))
 
+        self._redraw_plot()
+
+    def _redraw_plot(self):
         self.ax_sol.relim()
         self.ax_sol.autoscale_view()
         self.ax_gerr.relim()
