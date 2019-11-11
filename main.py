@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 from gui import Gui
 from numerical import ExactAbstract, EulerMethod, \
     ImprovedEulerMethod, RungeKuttaMethod
@@ -13,10 +12,6 @@ class Exact(ExactAbstract):
     def exact(self, x):
         return (m.e ** (self.c * x) - 1) * x
 
-    # y0 = (e ** (cx0) - 1) * x0
-    # y0/x0 + 1 = e ** cx0
-    # cx0 = ln(y0/x0 + 1)
-    # c = ln(y0/x0 + 1) / x0
     def set_constant(self, x0, y0):
         self.c = m.log(y0/x0 + 1) / x0
 
