@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from gui import Gui
-from numerical import *
+from numerical import ExactAbstract, EulerMethod, \
+    ImprovedEulerMethod, RungeKuttaMethod
 import math as m
 
 

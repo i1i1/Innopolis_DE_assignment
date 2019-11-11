@@ -1,4 +1,3 @@
-from numpy import log
 from abc import ABC, abstractmethod
 
 

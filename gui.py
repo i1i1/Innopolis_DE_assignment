@@ -45,8 +45,6 @@ class Gui:
         self._lines = []
 
         self.exact.set_constant(self.x0, self.y0)
-        self._exact_line, = self.ax_sol.plot(ex, self.exact.exact(ex),
-                                             label='exact')
 
         for nu in self.numericals:
             nm = nu.nm
@@ -58,6 +56,9 @@ class Gui:
                 self.ax_lerr.plot(x, lerr, "o-", label=nm.name)[0],
                 self.ax_gerr.plot(x, gerr, "o-", label=nm.name)[0]
             )
+
+        self._exact_line, = self.ax_sol.plot(ex, self.exact.exact(ex),
+                                             label='exact')
 
         self._add_button("h",  [0.1, 0.1,   0.05, 0.05])
         self._add_button("x0", [0.2, 0.1,   0.05, 0.05])
@@ -94,7 +95,7 @@ class Gui:
             try:
                 self.__setattr__(var, float(text))
                 self._replot()
-            except exception as e:
+            except Exception as e:
                 print(str(e))
 
         tb = TextBox(plt.axes(box), var+' = ',
