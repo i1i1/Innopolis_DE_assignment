@@ -31,9 +31,25 @@ class NumericalMethod(ABC):
     def get_y(self, x, y0):
         y = [y0]
         h = x[1] - x[0]
-        for i in range(1, len(x)):
-            y.append(self._next(h, x[i-1], y[i-1]))
+        for i in x[:-1]:
+            y.append(self._next(h, i, y[-1]))
         return y
+
+    def get_lerr(self, x, y0, exact):
+        lerr = [0]
+        h = x[1] - x[0]
+        for i in range(1, len(x)):
+            y_num = self._next(h, x[i-1], exact(x[i-1]))
+            y_exact = exact(x[i])
+            lerr.append(abs(y_exact - y_num))
+        return lerr
+
+    def get_gerr(self, x, y0, exact):
+        lerr = self.get_lerr(x, y0, exact)
+        gerr = [lerr[0]]
+        for i in lerr[1:]:
+            gerr.append(gerr[-1] + i)
+        return gerr
 
 
 class EulerMethod(NumericalMethod):

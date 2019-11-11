@@ -4,7 +4,14 @@ from matplotlib.widgets import TextBox
 
 
 class Gui:
-    title = "numerical method comparison"
+    class _Numerical:
+        def __init__(self, nm):
+            self.nm = nm
+
+        def add_graph(self, line, lerr, gerr):
+            self.line = line
+            self.lerr = lerr
+            self.gerr = gerr
 
     def __init__(self, exact, x0, y0, X, h):
         self.exact = exact
@@ -14,37 +21,50 @@ class Gui:
         self.X = X
         self.h = h
 
-        self.fig, self.ax = plt.subplots()
+        self.fig = plt.figure()
 
-        self.ax.set_title(self.title)
-        self.ax.grid(True)
+        gs = self.fig.add_gridspec(2, 5)
+        self.ax_sol = self.fig.add_subplot(gs[:, :3], title='Solutions')
+        self.ax_lerr = self.fig.add_subplot(gs[0, 3:], title='Local errors')
+        self.ax_gerr = self.fig.add_subplot(gs[1, 3:], title='Global errors')
 
-    def add_numericals(self, *numericals):
-        self.numericals += [*numericals]
-
-    def show_window(self):
+        self.ax_sol.grid(True)
+        self.ax_lerr.grid(True)
+        self.ax_gerr.grid(True)
         plt.subplots_adjust(bottom=0.2)
 
+    def add_numericals(self, *numericals):
+        for nu in numericals:
+            self.numericals.append(Gui._Numerical(nu))
+
+    def show_window(self):
         n = max((self.X-self.x0) // self.h, 2)
         x = np.linspace(self.x0, self.X, n)
         ex = np.linspace(self.x0, self.X)
 
         self._lines = []
 
-        for nm in self.numericals:
-            line, = self.ax.plot(x, nm.get_y(x, self.y0), "o-", label=nm.name)
-            self._lines.append(line)
-
         self.exact.set_constant(self.x0, self.y0)
-        self._exact_line, = self.ax.plot(ex, self.exact.exact(ex),
-                                         label='exact')
+        self._exact_line, = self.ax_sol.plot(ex, self.exact.exact(ex),
+                                             label='exact')
+
+        for nu in self.numericals:
+            nm = nu.nm
+            y = nm.get_y(x, self.y0)
+            lerr = nm.get_lerr(x, self.y0, self.exact.exact)
+            gerr = nm.get_gerr(x, self.y0, self.exact.exact)
+            nu.add_graph(
+                self.ax_sol.plot(x, y, "o-", label=nm.name)[0],
+                self.ax_lerr.plot(x, lerr, "o-", label=nm.name)[0],
+                self.ax_gerr.plot(x, gerr, "o-", label=nm.name)[0]
+            )
 
         self._add_button("h",  [0.1, 0.1,   0.05, 0.05])
         self._add_button("x0", [0.2, 0.1,   0.05, 0.05])
         self._add_button("X",  [0.3, 0.1,   0.05, 0.05])
         self._add_button("y0", [0.2, 0.025, 0.05, 0.05])
 
-        self.ax.legend()
+        self.ax_sol.legend()
         plt.show()
 
     def _replot(self):
@@ -52,17 +72,21 @@ class Gui:
         x = np.linspace(self.x0, self.X, n)
         ex = np.linspace(self.x0, self.X)
 
-        for i in range(len(self.numericals)):
-            line = self._lines[i]
-            nm = self.numericals[i]
-
-            line.set_data(x, nm.get_y(x, self.y0))
-
         self.exact.set_constant(self.x0, self.y0)
         self._exact_line.set_data(ex, self.exact.exact(ex))
 
-        self.ax.relim()
-        self.ax.autoscale_view()
+        for nu in self.numericals:
+            x = np.linspace(self.x0, self.X, n)
+            nu.line.set_data(x, nu.nm.get_y(x, self.y0))
+            nu.lerr.set_data(x, nu.nm.get_lerr(x, self.y0, self.exact.exact))
+            nu.gerr.set_data(x, nu.nm.get_gerr(x, self.y0, self.exact.exact))
+
+        self.ax_sol.relim()
+        self.ax_sol.autoscale_view()
+        self.ax_gerr.relim()
+        self.ax_gerr.autoscale_view()
+        self.ax_lerr.relim()
+        self.ax_lerr.autoscale_view()
         plt.draw()
 
     def _add_button(self, var, box):
