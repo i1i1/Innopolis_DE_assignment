@@ -1,14 +1,23 @@
 #!/usr/bin/python3
+
 from gui import Gui
 from numerical import *
+import math as m
 
 
 class Exact(ExactAbstract):
     def derivative(x, y):
-        return (1 + y/x) * log(1 + y/x) + y/x
+        return (1 + y/x) * m.log(1 + y/x) + y/x
 
-    def _partial(self, x):
-        return (3 ** x - 1) * x
+    def exact(self, x):
+        return (m.e ** (self.c * x) - 1) * x
+
+    # y0 = (e ** (cx0) - 1) * x0
+    # y0/x0 + 1 = e ** cx0
+    # cx0 = ln(y0/x0 + 1)
+    # c = ln(y0/x0 + 1) / x0
+    def set_constant(self, x0, y0):
+        self.c = m.log(y0/x0 + 1) / x0
 
 
 x0, y0, X, h = 1, 2, 6, 0.5

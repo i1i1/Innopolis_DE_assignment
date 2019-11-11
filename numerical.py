@@ -8,14 +8,12 @@ class ExactAbstract(ABC):
         pass
 
     @abstractmethod
-    def _partial(self, x):
+    def exact(self, x):
         pass
 
-    def exact(self, x):
-        return self._partial(x) + self.c
-
-    def set_constant(self, x, y):
-        self.c = y - self._partial(x)
+    @abstractmethod
+    def set_constant(self, x0, y0):
+        pass
 
 
 class NumericalMethod(ABC):
