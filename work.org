@@ -92,6 +92,32 @@ write only one function ~_next~ which would calculate next point:
           return y0 + h * self.der(x0, y0)
 #+END_src
 
+* Errors
+
+Errors are calculated inside ~Numericalmethod~ class.
+
+#+CAPTION: Local error function
+#+BEGIN_SRC python
+  def get_lerr(self, x, y0, exact):
+      lerr = [0]
+      h = x[1] - x[0]
+      for i in range(1, len(x)):
+          y_num = self._next(h, x[i-1], exact(x[i-1]))
+          y_exact = exact(x[i])
+          lerr.append(abs(y_exact - y_num))
+      return lerr
+#+END_src
+
+#+CAPTION: Global error function
+#+BEGIN_SRC python
+  def get_gerr(self, x, y0, exact):
+      lerr = self.get_lerr(x, y0, exact)
+      gerr = [lerr[0]]
+      for i in lerr[1:]:
+          gerr.append(gerr[-1] + i)
+      return gerr
+#+END_src
+
 * Screenshots
 
 #+CAPTION: Original view
