@@ -10,7 +10,7 @@ $y' = (1 + y/x) ln((x + y)/x) + y / x$
 
 $y_0 = 2, x_0 = 1$
 
-* Solution
+* Math Solution
 
 Let $y = x v$, then $y' = x v' + v$. So:
 
@@ -46,19 +46,32 @@ The final answer is:
 
 $y = (3 ^ x - 1) x$
 
-* UML diagram of classes and their fields
+* Code
+
+** Link
+
+My solution can be found at https://github.com/i1i1/Innopolis_DE_assignment.
+
+** OOP and SOLID
 
 #+CAPTION: Classes, their methods, and fields, and their relations
 [[./img/classes_DE_assignment.png]]
+
 
 #+CAPTION: Relation of packages
 #+attr_html: :width 200px
 #+attr_latex: :width 100px
 [[./img/packages_DE_assignment.png]]
 
-* Solution
 
-My solution can be found at https://github.com/i1i1/Innopolis_DE_assignment.
+In my solution I tried to use OOP and SOLID principles. For example:
++ Single responsibility -- solution has 2 main classes ~Gui~ (which implements gui) and ~NumericalMethod~ (which is abstract class for making new numerical methods) which serve different purposes.
++ Open-closed principle -- all derived classes in solution just specify some details in abstract ones, but not modify them.
++ Liskov substitution -- in solution ~Gui.add_numericals~ method takes objects of different classes as long as they derived from ~NumericalMethod~.
++ Interface segregation -- ~NumericalMethod~ has 3 different specific functions for different tasks (graph above).
++ Dependency inversion -- specific numerical methods have to define only 1 function in order to work.
+
+** About  ~main.py~
 
 I tried to make a program what won't depend on my variant, that is why ~Exact~
 is derived of ~ExactAbstract~, where user can implement only 3 functions in
@@ -78,6 +91,8 @@ code.
       def set_constant(self, x0, y0):
           self.c = m.log(y0/x0 + 1) / x0
 #+END_src
+
+** Language choice and Euler method
 
 Making program in python leaves even more space to work with. By using
 some commands like ~eval~ and ~exec~ which let you interprete code from string,
