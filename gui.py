@@ -60,7 +60,7 @@ class Gui:
         x = np.linspace(self.x0, self.X, n)
         ex = np.linspace(self.x0, self.X)
 
-        self._lines = []
+        self._lines = list()
 
         self.exact.set_constant(self.x0, self.y0)
 
@@ -104,11 +104,11 @@ class Gui:
         self._redraw_plot()
 
     def _redraw_plot(self):
-        self.ax_sol.relim()
+        self.ax_sol.relim(visible_only=True)
         self.ax_sol.autoscale_view()
-        self.ax_gerr.relim()
+        self.ax_gerr.relim(visible_only=True)
         self.ax_gerr.autoscale_view()
-        self.ax_lerr.relim()
+        self.ax_lerr.relim(visible_only=True)
         self.ax_lerr.autoscale_view()
         plt.draw()
 

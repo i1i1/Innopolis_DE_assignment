@@ -48,12 +48,12 @@ $y = (3 ^ x - 1) x$
 * UML diagram of classes and their fields
 
 #+CAPTION: Classes, their methods, and fields, and their relations
-[[./classes_DE_assignment.png]]
+[[./img/classes_DE_assignment.png]]
 
 #+CAPTION: Relation of packages
-#+attr_html: :width 100px
+#+attr_html: :width 200px
 #+attr_latex: :width 100px
-[[./packages_DE_assignment.png]]
+[[./img/packages_DE_assignment.png]]
 
 * Solution
 
@@ -63,6 +63,7 @@ only 3 functions in order to run another initial value problem. Because of that
 ~main.py~ file has only information which is needed to change variant, and it is
 only 24 lines of code.
 
+#+CAPTION: Implementation of my variant
 #+BEGIN_SRC python
   class Exact(ExactAbstract):
       def derivative(x, y):
@@ -78,3 +79,32 @@ only 24 lines of code.
 Making program in python leaves even more space to work with. By using
 some commands like ~eval~ and ~exec~ which let you interprete code from string,
 there can be added functionality of specifying user-defined function from GUI.
+
+Another great thing in design is that in order to create new numerical method user needs to
+write only one function ~_next~ which would calculate next point:
+
+#+CAPTION: Euler method implementation
+#+BEGIN_SRC python
+  class EulerMethod(NumericalMethod):
+      name = "Euler"
+
+      def _next(self, h, x0, y0):
+          return y0 + h * self.der(x0, y0)
+#+END_src
+
+* Screenshots
+
+#+CAPTION: Original view
+#+attr_html: :width 800px
+#+attr_latex: :width 400px
+[[./img/screenshot1.png]]
+
+#+CAPTION: Increasing ~X~
+#+attr_html: :width 800px
+#+attr_latex: :width 400px
+[[./img/screenshot2.png]]
+
+#+CAPTION: Removing Euler method
+#+attr_html: :width 800px
+#+attr_latex: :width 400px
+[[./img/screenshot3.png]]
