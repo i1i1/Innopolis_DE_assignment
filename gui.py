@@ -29,8 +29,14 @@ class Gui:
         self.ax_gerr = self.fig.add_subplot(gs[1, 3:], title='Global errors')
 
         self.ax_sol.grid(True)
+        self.ax_sol.set_xlabel("x")
+        self.ax_sol.set_ylabel("y")
         self.ax_lerr.grid(True)
+        self.ax_lerr.set_xlabel("№ steps")
+        self.ax_lerr.set_ylabel("error")
         self.ax_gerr.grid(True)
+        self.ax_gerr.set_xlabel("№ steps")
+        self.ax_gerr.set_ylabel("error")
         plt.subplots_adjust(left=0.2, bottom=0.2)
 
     def add_numericals(self, *numericals):
@@ -56,7 +62,7 @@ class Gui:
         self.checkboxes.on_clicked(checkbox_update)
 
     def show_window(self):
-        n = max((self.X-self.x0) // self.h, 2)
+        n = max(int((self.X-self.x0) // self.h), 2)
         x = np.linspace(self.x0, self.X, n)
         ex = np.linspace(self.x0, self.X)
 
@@ -67,12 +73,14 @@ class Gui:
         for nu in self.numericals:
             nm = nu.nm
             y = nm.get_y(x, self.y0)
-            lerr = nm.get_lerr(x, self.y0, self.exact.exact)
-            gerr = nm.get_gerr(x, self.y0, self.exact.exact)
+            xl, yl = nm.get_lerr(self.x0, self.y0, self.X, self.h,
+                                 self.exact.exact)
+            xg, yg = nm.get_gerr(self.x0, self.y0, self.X, self.h,
+                                 self.exact.exact)
             nu.add_graph(
                 self.ax_sol.plot(x, y, "o-", label=nm.name)[0],
-                self.ax_lerr.plot(x, lerr, "o-", label=nm.name)[0],
-                self.ax_gerr.plot(x, gerr, "o-", label=nm.name)[0]
+                self.ax_lerr.plot(xl, yl, "o-", label=nm.name)[0],
+                self.ax_gerr.plot(xg, yg, "o-", label=nm.name)[0]
             )
 
         self._exact_line, = self.ax_sol.plot(ex, self.exact.exact(ex),
@@ -88,7 +96,7 @@ class Gui:
         plt.show()
 
     def _replot(self):
-        n = max((self.X-self.x0) // self.h, 2)
+        n = max(int((self.X-self.x0) // self.h), 2)
         x = np.linspace(self.x0, self.X, n)
         ex = np.linspace(self.x0, self.X)
 
@@ -98,8 +106,10 @@ class Gui:
         for nu in self.numericals:
             x = np.linspace(self.x0, self.X, n)
             nu.line.set_data(x, nu.nm.get_y(x, self.y0))
-            nu.lerr.set_data(x, nu.nm.get_lerr(x, self.y0, self.exact.exact))
-            nu.gerr.set_data(x, nu.nm.get_gerr(x, self.y0, self.exact.exact))
+            nu.lerr.set_data(*nu.nm.get_lerr(self.x0, self.y0, self.X,
+                                             self.h, self.exact.exact))
+            nu.gerr.set_data(*nu.nm.get_gerr(self.x0, self.y0, self.X,
+                                             self.h, self.exact.exact))
 
         self._redraw_plot()
 

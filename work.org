@@ -1,5 +1,6 @@
 #+TITLE: Differential equations assignment.
 #+AUTHOR: Ivan Rybin gr.5
+#+STARTUP: inlineimages
 
 * Variant 14
 
@@ -19,7 +20,7 @@ $x v' = (1 + v) ln(1 + v)$
 
 $\frac{dv}{dx} = (1 + v) ln(1 + v) / x$
 
-$\int \frac{dv}{((1 + v) ln(1 + v))} = \int \frac{dx}{x}$
+$\int \frac{dv}{(1 + v) ln(1 + v)} = \int \frac{dx}{x}$
 
 $ln(ln(1 + v)) = ln(x) + c_{1}$
 
@@ -57,11 +58,13 @@ $y = (3 ^ x - 1) x$
 
 * Solution
 
-In my solution I tried to make a program what won't depend on my variant,
-that is why ~Exact~ is derived of ~ExactAbstract~, where user can implement
-only 3 functions in order to run another initial value problem. Because of that
-~main.py~ file has only information which is needed to change variant, and it is
-only 24 lines of code.
+My solution can be found at https://github.com/i1i1/Innopolis_DE_assignment.
+
+I tried to make a program what won't depend on my variant, that is why ~Exact~
+is derived of ~ExactAbstract~, where user can implement only 3 functions in
+order to run another initial value problem. Because of that ~main.py~ file has
+only information which is needed to change variant, and it is only 24 lines of
+code.
 
 #+CAPTION: Implementation of my variant
 #+BEGIN_SRC python
@@ -94,28 +97,41 @@ write only one function ~_next~ which would calculate next point:
 
 * Errors
 
-Errors are calculated inside ~Numericalmethod~ class.
+#+CAPTION: Errors with step 9 steps
+[[./img/errors_cmp1.png]]
+
+#+CAPTION: Errors with step 65 steps
+[[./img/errors_cmp2.png]]
+
+As you can see on screenshots above you can see that local errors have some
+expanential form while global error from some point becomes linear.
+
+Errors are calculated inside ~NumericalMethod~ class.
 
 #+CAPTION: Local error function
 #+BEGIN_SRC python
-  def get_lerr(self, x, y0, exact):
-      lerr = [0]
-      h = x[1] - x[0]
-      for i in range(1, len(x)):
+  def get_lerr(self, x0, y0, X, h, exact):
+      n = max(int((X-x0) // h), 2)
+      x = np.linspace(x0, X, n)
+      lerr = list()
+      for i in range(1, n):
           y_num = self._next(h, x[i-1], exact(x[i-1]))
           y_exact = exact(x[i])
           lerr.append(abs(y_exact - y_num))
-      return lerr
+      return range(1, n), lerr
 #+END_src
 
 #+CAPTION: Global error function
 #+BEGIN_SRC python
-  def get_gerr(self, x, y0, exact):
-      lerr = self.get_lerr(x, y0, exact)
-      gerr = [lerr[0]]
-      for i in lerr[1:]:
-          gerr.append(gerr[-1] + i)
-      return gerr
+  def get_gerr(self, x0, y0, X, h, exact):
+      n = max(int((X-x0) // h), 2)
+      gerr = list()
+      for i in range(2, n+1):
+          x = np.linspace(x0, X, i)
+          num = self.get_y(x, y0)
+          ex = exact(x)
+          gerr.append(abs(ex-num)[-1])
+      return range(1, n), gerr
 #+END_src
 
 * Screenshots

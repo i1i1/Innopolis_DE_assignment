@@ -1,3 +1,4 @@
+import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -32,21 +33,25 @@ class NumericalMethod(ABC):
             y.append(self._next(h, i, y[-1]))
         return y
 
-    def get_lerr(self, x, y0, exact):
-        lerr = [0]
-        h = x[1] - x[0]
-        for i in range(1, len(x)):
+    def get_lerr(self, x0, y0, X, h, exact):
+        n = max(int((X-x0) // h), 2)
+        x = np.linspace(x0, X, n)
+        lerr = list()
+        for i in range(1, n):
             y_num = self._next(h, x[i-1], exact(x[i-1]))
             y_exact = exact(x[i])
             lerr.append(abs(y_exact - y_num))
-        return lerr
+        return range(1, n), lerr
 
-    def get_gerr(self, x, y0, exact):
-        lerr = self.get_lerr(x, y0, exact)
-        gerr = [lerr[0]]
-        for i in lerr[1:]:
-            gerr.append(gerr[-1] + i)
-        return gerr
+    def get_gerr(self, x0, y0, X, h, exact):
+        n = max(int((X-x0) // h), 2)
+        gerr = list()
+        for i in range(2, n+1):
+            x = np.linspace(x0, X, i)
+            num = self.get_y(x, y0)
+            ex = exact(x)
+            gerr.append(abs(ex-num)[-1])
+        return range(1, n), gerr
 
 
 class EulerMethod(NumericalMethod):
